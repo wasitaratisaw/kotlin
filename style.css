@@ -18,6 +18,13 @@ h1 {
   font-size: 2rem;
   margin-bottom: 1rem;
 }
+.subtitle {
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: #1de9b6;
+  margin-bottom: 0.5rem;
+  font-style: italic;
+}
 #timer, #score {
   font-size: 1.2rem;
   margin: 0.5rem 0;
