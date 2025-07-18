@@ -1,4 +1,3 @@
-
 const startBtn = document.getElementById("start-btn");
 const questionEl = document.getElementById("question");
 const answersEl = document.getElementById("answers");
@@ -27,7 +26,7 @@ const questions = [
     q: "What color is a mirror?",
     a: ["Silver", "Clear", "White", "It depends"],
     c: 3,
-    r: "You really said 'clear’ didn’t you?"
+    r: "You really said 'clear' didn’t you?"
   },
   {
     q: "Solve: 10 + (2 × 3)",
@@ -46,6 +45,66 @@ const questions = [
     a: ["Egg", "Chicken", "Neither", "Omelette"],
     c: 0,
     r: "Existential crisis incoming."
+  },
+  {
+    q: "If a plane crashes on the border of two countries, where do you bury the survivors?",
+    a: ["Country A", "Country B", "Nowhere", "Depends on the plane"],
+    c: 2,
+    r: "Survivors aren’t buried!"
+  },
+  {
+    q: "How many months have 28 days?",
+    a: ["1", "12", "6", "Depends on the year"],
+    c: 1,
+    r: "All months have at least 28 days."
+  },
+  {
+    q: "What can travel around the world while staying in the same spot?",
+    a: ["A plane", "A stamp", "A shadow", "Time"],
+    c: 1,
+    r: "It’s a stamp, silly!"
+  },
+  {
+    q: "Which word is spelled incorrectly in every dictionary?",
+    a: ["Incorrectly", "Wrong", "Misspelled", "None"],
+    c: 0,
+    r: "Trick question! It’s the word 'Incorrectly.'"
+  },
+  {
+    q: "If you have me, you want to share me. If you share me, you don't have me. What am I?",
+    a: ["Secret", "Love", "Money", "Friendship"],
+    c: 0,
+    r: "Secrets don’t like the spotlight."
+  },
+  {
+    q: "Before Mt. Everest was discovered, what was the highest mountain?",
+    a: ["K2", "Everest", "Kangchenjunga", "Lhotse"],
+    c: 1,
+    r: "Everest was still the highest, even undiscovered."
+  },
+  {
+    q: "What comes once in a minute, twice in a moment, but never in a thousand years?",
+    a: ["The letter M", "Time", "The moon", "The sun"],
+    c: 0,
+    r: "It’s the letter M. Classic!"
+  },
+  {
+    q: "If you’re running a race and pass the person in 2nd place, what place are you in?",
+    a: ["1st", "2nd", "3rd", "Depends"],
+    c: 1,
+    r: "Passing 2nd means you’re now 2nd."
+  },
+  {
+    q: "How many letters are in the English alphabet?",
+    a: ["24", "25", "26", "27"],
+    c: 2,
+    r: "There are 26 letters."
+  },
+  {
+    q: "Which weighs more, a pound of gold or a pound of feathers?",
+    a: ["Gold", "Feathers", "Same", "Neither"],
+    c: 2,
+    r: "They weigh the same — a pound is a pound!"
   }
 ];
 
