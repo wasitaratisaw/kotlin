@@ -16,6 +16,7 @@ let timeLeft = 60;
 let timer;
 let gameActive = false;
 let questionsAnswered = 0;
+let availableQuestions = [];
 
 const maxLeaderboardEntries = 5;
 
@@ -109,8 +110,80 @@ const questions = [
     a: ["Gold", "Feathers", "Same", "Neither"],
     c: 2,
     r: "They weigh the same — a pound is a pound!"
+  },
+  // New additions in the same style & tone:
+  {
+    q: "If a rooster lays an egg on a rooftop, which side will it roll down?",
+    a: ["Left", "Right", "It won’t roll", "Roosters don’t lay eggs"],
+    c: 3,
+    r: "Roosters don’t lay eggs!"
+  },
+  {
+    q: "Can you name three consecutive days without using the words Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, or Sunday?",
+    a: ["Yesterday, Today, Tomorrow", "Friday, Saturday, Sunday", "First, Second, Third", "No"],
+    c: 0,
+    r: "You got it!"
+  },
+  {
+    q: "What has many teeth but can’t bite?",
+    a: ["Comb", "Zipper", "Saw", "Shark"],
+    c: 0,
+    r: "A comb, of course!"
+  },
+  {
+    q: "If two’s company and three’s a crowd, what are four and five?",
+    a: ["Nine", "A party", "Too many", "Numbers"],
+    c: 0,
+    r: "Four plus five is nine!"
+  },
+  {
+    q: "What has hands but can’t clap?",
+    a: ["Clock", "Robot", "Ghost", "Statue"],
+    c: 0,
+    r: "A clock!"
+  },
+  {
+    q: "How far can a dog run into the woods?",
+    a: ["Halfway", "All the way", "Forever", "10 miles"],
+    c: 0,
+    r: "Halfway, then it’s running out!"
+  },
+  {
+    q: "What is always coming but never arrives?",
+    a: ["Tomorrow", "Next week", "The bus", "Never"],
+    c: 0,
+    r: "Tomorrow!"
+  },
+  {
+    q: "If you throw a red stone into the blue sea what will it become?",
+    a: ["Wet", "Red", "Blue", "Stone"],
+    c: 0,
+    r: "Wet, obviously."
+  },
+  {
+    q: "What has one eye but can’t see?",
+    a: ["Needle", "Cyclops", "Storm", "Hurricane"],
+    c: 0,
+    r: "A needle!"
+  },
+  {
+    q: "Which word becomes shorter when you add two letters to it?",
+    a: ["Short", "Smaller", "Little", "Tiny"],
+    c: 0,
+    r: "Short!"
   }
 ];
+
+// Shuffle function
+function shuffle(array) {
+  let currentIndex = array.length, randomIndex;
+  while (currentIndex !== 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+    [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+  }
+  return array;
+}
 
 function startGame() {
   score = 0;
@@ -122,6 +195,9 @@ function startGame() {
   answersEl.classList.remove("hidden");
   updateScore();
   updateProgress();
+
+  availableQuestions = shuffle([...questions]); // fresh shuffled copy
+
   nextQuestion();
   timer = setInterval(updateTimer, 1000);
   clearLeaderboardDisplay();
@@ -139,30 +215,33 @@ function updateScore() {
 }
 
 function updateProgress() {
-  const maxQuestions = 20; // max bar fill for 20 questions answered
+  const maxQuestions = 20;
   let percent = Math.min((questionsAnswered / maxQuestions) * 100, 100);
   document.getElementById("progress-bar").style.width = percent + "%";
 }
 
 function nextQuestion() {
   if (!gameActive) return;
+
+  if (availableQuestions.length === 0) {
+    endGame();
+    return;
+  }
+
   questionsAnswered++;
   updateProgress();
 
-  // Fade out question text
   questionEl.classList.add("fade-out");
 
   setTimeout(() => {
-    const q = questions[Math.floor(Math.random() * questions.length)];
-    currentQuestion = q;
-    questionEl.textContent = q.q;
+    currentQuestion = availableQuestions.pop();
+    questionEl.textContent = currentQuestion.q;
     answerBtns.forEach((btn, index) => {
-      btn.textContent = q.a[index];
+      btn.textContent = currentQuestion.a[index];
       btn.onclick = () => checkAnswer(index);
     });
-    // Fade in question text
     questionEl.classList.remove("fade-out");
-  }, 400); // match with CSS fade duration
+  }, 400);
 }
 
 function checkAnswer(index) {
@@ -201,7 +280,7 @@ function askNameAndSaveScore() {
   leaderboard.push({ name, score });
   leaderboard.sort((a, b) => b.score - a.score);
   if (leaderboard.length > maxLeaderboardEntries) {
-    leaderboard.length = maxLeaderboardEntries; // keep top 5
+    leaderboard.length = maxLeaderboardEntries;
   }
   localStorage.setItem("joesBarrelLeaderboard", JSON.stringify(leaderboard));
 }
@@ -239,5 +318,4 @@ function clearLeaderboardDisplay() {
 startBtn.onclick = startGame;
 replayBtn.onclick = startGame;
 
-// On page load, display leaderboard if available
 window.onload = displayLeaderboard;
