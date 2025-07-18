@@ -148,13 +148,21 @@ function nextQuestion() {
   if (!gameActive) return;
   questionsAnswered++;
   updateProgress();
-  const q = questions[Math.floor(Math.random() * questions.length)];
-  currentQuestion = q;
-  questionEl.textContent = q.q;
-  answerBtns.forEach((btn, index) => {
-    btn.textContent = q.a[index];
-    btn.onclick = () => checkAnswer(index);
-  });
+
+  // Fade out question text
+  questionEl.classList.add("fade-out");
+
+  setTimeout(() => {
+    const q = questions[Math.floor(Math.random() * questions.length)];
+    currentQuestion = q;
+    questionEl.textContent = q.q;
+    answerBtns.forEach((btn, index) => {
+      btn.textContent = q.a[index];
+      btn.onclick = () => checkAnswer(index);
+    });
+    // Fade in question text
+    questionEl.classList.remove("fade-out");
+  }, 400); // match with CSS fade duration
 }
 
 function checkAnswer(index) {
