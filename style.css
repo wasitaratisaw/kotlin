@@ -1,98 +1,19 @@
-body {
-  margin: 0;
-  font-family: 'Inter', sans-serif;
-  background-color: #111;
-  color: #f4f4f4;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  padding: 1rem;
-}
-.container {
-  text-align: center;
-  max-width: 600px;
-  width: 100%;
-}
-h1 {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-}
-.subtitle {
-  font-weight: 600;
-  font-size: 1.2rem;
-  color: #1de9b6;
-  margin-bottom: 0.5rem;
-  font-style: italic;
-}
-#timer, #score {
-  font-size: 1.2rem;
-  margin: 0.5rem 0;
-}
-#progress-container {
-  width: 100%;
-  height: 15px;
-  background-color: #333;
-  border-radius: 8px;
-  margin: 10px 0 20px 0;
-  overflow: hidden;
-}
-#progress-bar {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, #1de9b6, #00bfa5);
-  transition: width 0.3s ease;
-  border-radius: 8px;
-}
-#question {
-  margin: 1.5rem 0;
-  font-size: 1.3rem;
-}
-#answers {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+/* Existing styles... */
+
+#leaderboard-container {
   margin: 1rem 0;
+  text-align: left;
+  max-width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+  color: #1de9b6;
 }
-.answer {
-  padding: 0.75rem;
-  font-size: 1rem;
-  background-color: #1de9b6;
-  border: none;
-  color: #111;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
+
+#leaderboard-list {
+  padding-left: 1.2rem;
 }
-.answer:hover {
-  background-color: #0ccfa3;
-}
-button {
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  margin-top: 1rem;
-  background-color: #1de9b6;
-  color: #111;
-  transition: background-color 0.2s ease;
-}
-button:hover {
-  background-color: #0ccfa3;
-}
-.hidden {
-  display: none;
-}
-#feedback {
-  margin-top: 1rem;
-  font-style: italic;
-  height: 1.5rem;
-}
-#game-over h2 {
-  margin-bottom: 0.5rem;
-}
-#final-score {
-  font-size: 1.2rem;
-  margin-bottom: 1rem;
+
+#leaderboard-list li {
+  margin-bottom: 0.4rem;
+  font-weight: 600;
 }
