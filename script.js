@@ -7,200 +7,138 @@ const scoreEl = document.getElementById("score");
 const feedbackEl = document.getElementById("feedback");
 const gameOverEl = document.getElementById("game-over");
 const finalScoreEl = document.getElementById("final-score");
-const leaderboardList = document.getElementById("leaderboard-list");
 const replayBtn = document.getElementById("replay-btn");
+const roundEl = document.getElementById("round");
 
 let currentQuestion = {};
 let score = 0;
 let timeLeft = 60;
 let timer;
 let gameActive = false;
-let questionsAnswered = 0;
-let availableQuestions = [];
+let round = 1;
+let roundIndex = 0;
 
-const maxLeaderboardEntries = 5;
+const correctQuotes = [
+  "Frankly, my dear, you nailed it.",
+  "You're gonna need a bigger brain.",
+  "I feel the need... the need for trivia!",
+  "You're the king of the quiz world!",
+  "May the score be with you."
+];
 
-const questions = [
+const incorrectQuotes = [
+  "You can't handle the truth!",
+  "Here's looking at you, wrong answer.",
+  "I'm gonna make you regret that guess.",
+  "Houston, we have a problem.",
+  "Life is like a box of wrong answers."
+];
+
+const easyQuestions = [
   {
     q: "What's heavier: 1kg of steel or 1kg of feathers?",
     a: ["Steel", "Feathers", "Same", "Can't tell"],
-    c: 2,
-    r: "Physics just left the chat."
+    c: 2
   },
   {
     q: "What color is a mirror?",
     a: ["Silver", "Clear", "White", "It depends"],
-    c: 3,
-    r: "You really said 'clear' didn’t you?"
+    c: 3
   },
   {
     q: "Solve: 10 + (2 × 3)",
     a: ["36", "16", "20", "26"],
-    c: 1,
-    r: "PEMDAS died for this."
+    c: 1
   },
   {
     q: "Which is not a fruit?",
     a: ["Tomato", "Apple", "Carrot", "Banana"],
-    c: 2,
-    r: "Google is crying."
+    c: 2
   },
   {
     q: "Which comes first: Chicken or egg?",
     a: ["Egg", "Chicken", "Neither", "Omelette"],
-    c: 0,
-    r: "Existential crisis incoming."
-  },
-  {
-    q: "If a plane crashes on the border of two countries, where do you bury the survivors?",
-    a: ["Country A", "Country B", "Nowhere", "Depends on the plane"],
-    c: 2,
-    r: "Survivors aren’t buried!"
-  },
-  {
-    q: "How many months have 28 days?",
-    a: ["1", "12", "6", "Depends on the year"],
-    c: 1,
-    r: "All months have at least 28 days."
-  },
-  {
-    q: "What can travel around the world while staying in the same spot?",
-    a: ["A plane", "A stamp", "A shadow", "Time"],
-    c: 1,
-    r: "It’s a stamp, silly!"
-  },
-  {
-    q: "Which word is spelled incorrectly in every dictionary?",
-    a: ["Incorrectly", "Wrong", "Misspelled", "None"],
-    c: 0,
-    r: "Trick question! It’s the word 'Incorrectly.'"
-  },
-  {
-    q: "If you have me, you want to share me. If you share me, you don't have me. What am I?",
-    a: ["Secret", "Love", "Money", "Friendship"],
-    c: 0,
-    r: "Secrets don’t like the spotlight."
-  },
-  {
-    q: "Before Mt. Everest was discovered, what was the highest mountain?",
-    a: ["K2", "Everest", "Kangchenjunga", "Lhotse"],
-    c: 1,
-    r: "Everest was still the highest, even undiscovered."
-  },
-  {
-    q: "What comes once in a minute, twice in a moment, but never in a thousand years?",
-    a: ["The letter M", "Time", "The moon", "The sun"],
-    c: 0,
-    r: "It’s the letter M. Classic!"
-  },
-  {
-    q: "If you’re running a race and pass the person in 2nd place, what place are you in?",
-    a: ["1st", "2nd", "3rd", "Depends"],
-    c: 1,
-    r: "Passing 2nd means you’re now 2nd."
-  },
-  {
-    q: "How many letters are in the English alphabet?",
-    a: ["24", "25", "26", "27"],
-    c: 2,
-    r: "There are 26 letters."
-  },
-  {
-    q: "Which weighs more, a pound of gold or a pound of feathers?",
-    a: ["Gold", "Feathers", "Same", "Neither"],
-    c: 2,
-    r: "They weigh the same — a pound is a pound!"
-  },
-  {
-    q: "If a rooster lays an egg on a rooftop, which side will it roll down?",
-    a: ["Left", "Right", "It won’t roll", "Roosters don’t lay eggs"],
-    c: 3,
-    r: "Roosters don’t lay eggs!"
-  },
-  {
-    q: "Can you name three consecutive days without using the words Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, or Sunday?",
-    a: ["Yesterday, Today, Tomorrow", "Friday, Saturday, Sunday", "First, Second, Third", "No"],
-    c: 0,
-    r: "You got it!"
-  },
-  {
-    q: "What has many teeth but can’t bite?",
-    a: ["Comb", "Zipper", "Saw", "Shark"],
-    c: 0,
-    r: "A comb, of course!"
-  },
-  {
-    q: "If two’s company and three’s a crowd, what are four and five?",
-    a: ["Nine", "A party", "Too many", "Numbers"],
-    c: 0,
-    r: "Four plus five is nine!"
-  },
-  {
-    q: "What has hands but can’t clap?",
-    a: ["Clock", "Robot", "Ghost", "Statue"],
-    c: 0,
-    r: "A clock!"
-  },
-  {
-    q: "How far can a dog run into the woods?",
-    a: ["Halfway", "All the way", "Forever", "10 miles"],
-    c: 0,
-    r: "Halfway, then it’s running out!"
-  },
-  {
-    q: "What is always coming but never arrives?",
-    a: ["Tomorrow", "Next week", "The bus", "Never"],
-    c: 0,
-    r: "Tomorrow!"
-  },
-  {
-    q: "If you throw a red stone into the blue sea what will it become?",
-    a: ["Wet", "Red", "Blue", "Stone"],
-    c: 0,
-    r: "Wet, obviously."
-  },
-  {
-    q: "What has one eye but can’t see?",
-    a: ["Needle", "Cyclops", "Storm", "Hurricane"],
-    c: 0,
-    r: "A needle!"
-  },
-  {
-    q: "Which word becomes shorter when you add two letters to it?",
-    a: ["Short", "Smaller", "Little", "Tiny"],
-    c: 0,
-    r: "Short!"
+    c: 0
   }
 ];
 
-// Shuffle function
-function shuffle(array) {
-  let currentIndex = array.length, randomIndex;
-  while (currentIndex !== 0) {
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex--;
-    [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+const mediumQuestions = [
+  {
+    q: "What’s the capital of Canada?",
+    a: ["Toronto", "Ottawa", "Vancouver", "Montreal"],
+    c: 1
+  },
+  {
+    q: "In what year did World War II end?",
+    a: ["1944", "1945", "1939", "1946"],
+    c: 1
+  },
+  {
+    q: "Which planet has the most moons?",
+    a: ["Jupiter", "Saturn", "Mars", "Neptune"],
+    c: 1
+  },
+  {
+    q: "What’s the longest bone in the human body?",
+    a: ["Femur", "Humerus", "Tibia", "Skull"],
+    c: 0
+  },
+  {
+    q: "What is the chemical symbol for gold?",
+    a: ["Gd", "Go", "Au", "Ag"],
+    c: 2
   }
-  return array;
-}
+];
+
+const hardQuestions = [
+  {
+    q: "Who directed the film 'Parasite'?",
+    a: ["Park Chan-wook", "Bong Joon-ho", "Ang Lee", "Hirokazu Kore-eda"],
+    c: 1
+  },
+  {
+    q: "What is Schrödinger’s cat thought experiment about?",
+    a: ["Teleportation", "Parallel universes", "Quantum superposition", "Time travel"],
+    c: 2
+  },
+  {
+    q: "Which mathematician invented the integral sign ∫?",
+    a: ["Leibniz", "Newton", "Euler", "Gauss"],
+    c: 0
+  },
+  {
+    q: "What’s the 7th digit of Pi after the decimal?",
+    a: ["9", "3", "5", "2"],
+    c: 0
+  },
+  {
+    q: "What is the hardest natural material on Earth?",
+    a: ["Graphite", "Quartz", "Diamond", "Obsidian"],
+    c: 2
+  }
+];
+
+const rounds = [
+  { name: "Round 1: Easy", questions: easyQuestions, points: 1 },
+  { name: "Round 2: Medium", questions: mediumQuestions, points: 2 },
+  { name: "Round 3: Hard", questions: hardQuestions, points: 3 }
+];
+
+let usedQuestions = [];
 
 function startGame() {
   score = 0;
   timeLeft = 60;
-  questionsAnswered = 0;
+  roundIndex = 0;
   gameActive = true;
+  usedQuestions = [];
   startBtn.classList.add("hidden");
   gameOverEl.classList.add("hidden");
   answersEl.classList.remove("hidden");
   updateScore();
-  updateProgress();
-
-  availableQuestions = shuffle([...questions]); // fresh shuffled copy
-
+  updateRoundDisplay();
   nextQuestion();
   timer = setInterval(updateTimer, 1000);
-  clearLeaderboardDisplay();
-  feedbackEl.textContent = "";
 }
 
 function updateTimer() {
@@ -213,54 +151,59 @@ function updateScore() {
   scoreEl.textContent = `Score: ${score}`;
 }
 
-function updateProgress() {
-  const maxQuestions = 20;
-  let percent = Math.min((questionsAnswered / maxQuestions) * 100, 100);
-  document.getElementById("progress-bar").style.width = percent + "%";
+function updateRoundDisplay() {
+  roundEl.textContent = rounds[roundIndex].name;
 }
 
 function nextQuestion() {
-  if (!gameActive) return;
+  const currentRound = rounds[roundIndex];
 
-  if (availableQuestions.length === 0) {
-    endGame();
-    return;
+  if (usedQuestions.length === currentRound.questions.length) {
+    // Go to next round if possible
+    roundIndex++;
+    if (roundIndex >= rounds.length) {
+      endGame();
+      return;
+    }
+    usedQuestions = [];
+    updateRoundDisplay();
   }
 
-  questionsAnswered++;
-  updateProgress();
+  let q;
+  do {
+    q = rounds[roundIndex].questions[Math.floor(Math.random() * rounds[roundIndex].questions.length)];
+  } while (usedQuestions.includes(q));
+  usedQuestions.push(q);
 
-  questionEl.classList.add("fade-out");
+  currentQuestion = q;
+  questionEl.textContent = q.q;
+  answerBtns.forEach((btn, index) => {
+    btn.textContent = q.a[index];
+    btn.onclick = () => checkAnswer(index);
+  });
+}
 
-  setTimeout(() => {
-    currentQuestion = availableQuestions.shift();  // Changed to shift() to avoid repeats
-    questionEl.textContent = currentQuestion.q;
-    answerBtns.forEach((btn, index) => {
-      btn.textContent = currentQuestion.a[index];
-      btn.onclick = () => checkAnswer(index);
-      btn.disabled = false;  // Enable buttons for new question
-    });
-    questionEl.classList.remove("fade-out");
-  }, 400);
+function getRandomQuote(type) {
+  const quotes = type === "correct" ? correctQuotes : incorrectQuotes;
+  return quotes[Math.floor(Math.random() * quotes.length)];
 }
 
 function checkAnswer(index) {
   if (!gameActive) return;
 
-  answerBtns.forEach(btn => btn.disabled = true); // Disable buttons after answer to prevent multiple clicks
-
+  const points = rounds[roundIndex].points;
   if (index === currentQuestion.c) {
-    feedbackEl.textContent = "Correct! 🧠";
-    score++;
+    feedbackEl.textContent = getRandomQuote("correct");
+    score += points;
     updateScore();
   } else {
-    feedbackEl.textContent = currentQuestion.r;
+    feedbackEl.textContent = getRandomQuote("incorrect");
   }
+
   setTimeout(() => {
     feedbackEl.textContent = "";
-    answerBtns.forEach(btn => btn.disabled = false); // Re-enable buttons for next question
     nextQuestion();
-  }, 1000);
+  }, 1500);
 }
 
 function endGame() {
@@ -271,55 +214,7 @@ function endGame() {
   gameOverEl.classList.remove("hidden");
   finalScoreEl.textContent = `You scored ${score} point${score === 1 ? "" : "s"}.`;
   startBtn.classList.remove("hidden");
-
-  askNameAndSaveScore();
-  displayLeaderboard();
-}
-
-function askNameAndSaveScore() {
-  let name = prompt("Game over! Enter your name for the leaderboard:", "Player");
-  if (!name || name.trim() === "") name = "Player";
-
-  const leaderboard = getLeaderboard();
-  leaderboard.push({ name, score });
-  leaderboard.sort((a, b) => b.score - a.score);
-  if (leaderboard.length > maxLeaderboardEntries) {
-    leaderboard.length = maxLeaderboardEntries;
-  }
-  localStorage.setItem("joesBarrelLeaderboard", JSON.stringify(leaderboard));
-}
-
-function getLeaderboard() {
-  const saved = localStorage.getItem("joesBarrelLeaderboard");
-  if (saved) {
-    try {
-      return JSON.parse(saved);
-    } catch {
-      return [];
-    }
-  }
-  return [];
-}
-
-function displayLeaderboard() {
-  const leaderboard = getLeaderboard();
-  leaderboardList.innerHTML = "";
-  if (leaderboard.length === 0) {
-    leaderboardList.innerHTML = "<li>No scores yet. Be the first!</li>";
-    return;
-  }
-  leaderboard.forEach(entry => {
-    const li = document.createElement("li");
-    li.textContent = `${entry.name}: ${entry.score}`;
-    leaderboardList.appendChild(li);
-  });
-}
-
-function clearLeaderboardDisplay() {
-  leaderboardList.innerHTML = "";
 }
 
 startBtn.onclick = startGame;
 replayBtn.onclick = startGame;
-
-window.onload = displayLeaderboard;
