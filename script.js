@@ -14,6 +14,7 @@ let score = 0;
 let timeLeft = 60;
 let timer;
 let gameActive = false;
+let questionsAnswered = 0;
 
 const questions = [
   {
@@ -111,11 +112,13 @@ const questions = [
 function startGame() {
   score = 0;
   timeLeft = 60;
+  questionsAnswered = 0;
   gameActive = true;
   startBtn.classList.add("hidden");
   gameOverEl.classList.add("hidden");
   answersEl.classList.remove("hidden");
   updateScore();
+  updateProgress();
   nextQuestion();
   timer = setInterval(updateTimer, 1000);
 }
@@ -130,7 +133,16 @@ function updateScore() {
   scoreEl.textContent = `Score: ${score}`;
 }
 
+function updateProgress() {
+  const maxQuestions = 20; // max bar fill for 20 questions answered
+  let percent = Math.min((questionsAnswered / maxQuestions) * 100, 100);
+  document.getElementById("progress-bar").style.width = percent + "%";
+}
+
 function nextQuestion() {
+  if (!gameActive) return;
+  questionsAnswered++;
+  updateProgress();
   const q = questions[Math.floor(Math.random() * questions.length)];
   currentQuestion = q;
   questionEl.textContent = q.q;
