@@ -1,216 +1,257 @@
-/* Reset & base */
-* {
-  box-sizing: border-box;
-}
-body {
-  margin: 0;
-  font-family: 'Inter', sans-serif;
-  background-color: #111;
-  color: #f4f4f4;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 1rem;
-}
-.container {
-  text-align: center;
-  max-width: 600px;
-  width: 100%;
-  padding: 1rem 2rem;
-  background-color: #222;
-  border-radius: 12px;
-  box-shadow: 0 0 15px rgba(0, 191, 165, 0.7);
+const startBtn = document.getElementById("start-btn");
+const questionEl = document.getElementById("question");
+const answersEl = document.getElementById("answers");
+const answerBtns = document.querySelectorAll(".answer");
+const timerEl = document.getElementById("timer");
+const timerBar = document.getElementById("timer-bar");
+const scoreEl = document.getElementById("score");
+const feedbackEl = document.getElementById("feedback");
+const gameOverEl = document.getElementById("game-over");
+const finalScoreEl = document.getElementById("final-score");
+const replayBtn = document.getElementById("replay-btn");
+const roundEl = document.getElementById("round");
+const leaderboardList = document.getElementById("leaderboard-list");
+
+let currentQuestion = {};
+let score = 0;
+let timeLeft = 60;
+let timer;
+let gameActive = false;
+let roundIndex = 0;
+let usedQuestions = [];
+
+const correctQuotes = [
+  "Frankly, my dear, you nailed it.",
+  "You're gonna need a bigger brain.",
+  "I feel the need... the need for trivia!",
+  "You're the king of the quiz world!",
+  "May the score be with you."
+];
+
+const incorrectQuotes = [
+  "You can't handle the truth!",
+  "Here's looking at you, wrong answer.",
+  "I'm gonna make you regret that guess.",
+  "Houston, we have a problem.",
+  "Life is like a box of wrong answers."
+];
+
+const easyQuestions = [
+  {
+    q: "What's heavier: 1kg of steel or 1kg of feathers?",
+    a: ["Steel", "Feathers", "Same", "Can't tell"],
+    c: 2
+  },
+  {
+    q: "What color is a mirror?",
+    a: ["Silver", "Clear", "White", "It depends"],
+    c: 3
+  },
+  {
+    q: "Solve: 10 + (2 × 3)",
+    a: ["36", "16", "20", "26"],
+    c: 1
+  },
+  {
+    q: "Which is not a fruit?",
+    a: ["Tomato", "Apple", "Carrot", "Banana"],
+    c: 2
+  },
+  {
+    q: "Which comes first: Chicken or egg?",
+    a: ["Egg", "Chicken", "Neither", "Omelette"],
+    c: 0
+  }
+];
+
+const mediumQuestions = [
+  {
+    q: "What’s the capital of Canada?",
+    a: ["Toronto", "Ottawa", "Vancouver", "Montreal"],
+    c: 1
+  },
+  {
+    q: "In what year did World War II end?",
+    a: ["1944", "1945", "1939", "1946"],
+    c: 1
+  },
+  {
+    q: "Which planet has the most moons?",
+    a: ["Jupiter", "Saturn", "Mars", "Neptune"],
+    c: 1
+  },
+  {
+    q: "What’s the longest bone in the human body?",
+    a: ["Femur", "Humerus", "Tibia", "Skull"],
+    c: 0
+  },
+  {
+    q: "What is the chemical symbol for gold?",
+    a: ["Gd", "Go", "Au", "Ag"],
+    c: 2
+  }
+];
+
+const hardQuestions = [
+  {
+    q: "Who directed the film 'Parasite'?",
+    a: ["Park Chan-wook", "Bong Joon-ho", "Ang Lee", "Hirokazu Kore-eda"],
+    c: 1
+  },
+  {
+    q: "What is Schrödinger’s cat thought experiment about?",
+    a: ["Teleportation", "Parallel universes", "Quantum superposition", "Time travel"],
+    c: 2
+  },
+  {
+    q: "Which mathematician invented the integral sign ∫?",
+    a: ["Leibniz", "Newton", "Euler", "Gauss"],
+    c: 0
+  },
+  {
+    q: "What’s the 7th digit of Pi after the decimal?",
+    a: ["9", "3", "5", "2"],
+    c: 0
+  },
+  {
+    q: "What is the hardest natural material on Earth?",
+    a: ["Graphite", "Quartz", "Diamond", "Obsidian"],
+    c: 2
+  }
+];
+
+const rounds = [
+  { name: "Round 1: Easy", questions: easyQuestions, points: 1 },
+  { name: "Round 2: Medium", questions: mediumQuestions, points: 2 },
+  { name: "Round 3: Hard", questions: hardQuestions, points: 3 }
+];
+
+function startGame() {
+  score = 0;
+  timeLeft = 60;
+  roundIndex = 0;
+  gameActive = true;
+  usedQuestions = [];
+  startBtn.classList.add("hidden");
+  gameOverEl.classList.add("hidden");
+  answersEl.classList.remove("hidden");
+  updateScore();
+  updateRoundDisplay();
+  updateTimerBar();
+  nextQuestion();
+  timer = setInterval(() => {
+    timeLeft--;
+    timerEl.textContent = timeLeft;
+    updateTimerBar();
+    if (timeLeft <= 0) endGame();
+  }, 1000);
+  clearLeaderboardDisplay();
 }
 
-/* Titles */
-h1 {
-  font-size: 2.5rem;
-  margin-bottom: 0.5rem;
-}
-.subtitle {
-  font-weight: 600;
-  font-size: 1.2rem;
-  color: #1de9b6;
-  margin-bottom: 1.5rem;
-  font-style: italic;
-  letter-spacing: 0.05em;
+function updateScore() {
+  scoreEl.textContent = `Score: ${score}`;
 }
 
-/* Timer & Score */
-#timer, #score {
-  font-size: 1.3rem;
-  margin: 0.5rem 0;
-  font-weight: 600;
+function updateRoundDisplay() {
+  roundEl.textContent = rounds[roundIndex].name;
 }
 
-/* Progress bar */
-#progress-container {
-  width: 100%;
-  height: 15px;
-  background-color: #333;
-  border-radius: 8px;
-  margin: 15px 0 25px 0;
-  overflow: hidden;
-  box-shadow: inset 0 0 5px #000;
-}
-#progress-bar {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, #1de9b6, #00bfa5);
-  transition: width 0.3s ease;
-  border-radius: 8px;
-  box-shadow: 0 0 8px #00bfa5;
+function updateTimerBar() {
+  const percent = (timeLeft / 60) * 100;
+  timerBar.style.width = percent + "%";
 }
 
-/* Question */
-#question {
-  margin: 1.5rem 0;
-  font-size: 1.5rem;
-  font-weight: 600;
-  transition: opacity 0.4s ease;
-  opacity: 1;
+function nextQuestion() {
+  const currentRound = rounds[roundIndex];
+
+  if (usedQuestions.length === currentRound.questions.length) {
+    // Move to next round if any
+    roundIndex++;
+    if (roundIndex >= rounds.length) {
+      endGame();
+      return;
+    }
+    usedQuestions = [];
+    updateRoundDisplay();
+  }
+
+  let q;
+  do {
+    q = rounds[roundIndex].questions[Math.floor(Math.random() * rounds[roundIndex].questions.length)];
+  } while (usedQuestions.includes(q));
+  usedQuestions.push(q);
+
+  currentQuestion = q;
+  questionEl.textContent = q.q;
+  answerBtns.forEach((btn, index) => {
+    btn.textContent = q.a[index];
+    btn.onclick = () => checkAnswer(index);
+  });
 }
 
-/* Fade out class for question */
-#question.fade-out {
-  opacity: 0;
+function getRandomQuote(type) {
+  const quotes = type === "correct" ? correctQuotes : incorrectQuotes;
+  return quotes[Math.floor(Math.random() * quotes.length)];
 }
 
-/* Answers grid */
-#answers {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin: 1rem 0;
-}
-.answer {
-  padding: 0.75rem;
-  font-size: 1.1rem;
-  background-color: #1de9b6;
-  border: none;
-  color: #111;
-  border-radius: 12px;
-  cursor: pointer;
-  font-weight: 700;
-  box-shadow: 0 0 8px #00bfa5;
-  transition: background-color 0.2s ease, transform 0.15s ease;
-  user-select: none;
-}
-.answer:hover {
-  background-color: #0ccfa3;
-  transform: scale(1.05);
-}
-.answer:active {
-  transform: scale(0.95);
-  box-shadow: 0 0 6px #00bfa5 inset;
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+function checkAnswer(index) {
+  if (!gameActive) return;
+
+  const points = rounds[roundIndex].points;
+  if (index === currentQuestion.c) {
+    feedbackEl.textContent = getRandomQuote("correct");
+    score += points;
+    updateScore();
+  } else {
+    feedbackEl.textContent = getRandomQuote("incorrect");
+  }
+
+  setTimeout(() => {
+    feedbackEl.textContent = "";
+    nextQuestion();
+  }, 1500);
 }
 
-/* Buttons */
-button {
-  padding: 0.75rem 2rem;
-  font-size: 1.1rem;
-  border-radius: 12px;
-  border: none;
-  cursor: pointer;
-  margin-top: 1.5rem;
-  background-color: #1de9b6;
-  color: #111;
-  font-weight: 700;
-  box-shadow: 0 0 10px #00bfa5;
-  transition: background-color 0.2s ease, transform 0.15s ease;
-  user-select: none;
-}
-button:hover {
-  background-color: #0ccfa3;
-  transform: scale(1.05);
-}
-button:active {
-  transform: scale(0.95);
-  box-shadow: 0 0 6px #00bfa5 inset;
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+function endGame() {
+  gameActive = false;
+  clearInterval(timer);
+  questionEl.textContent = "";
+  answersEl.classList.add("hidden");
+  gameOverEl.classList.remove("hidden");
+  finalScoreEl.textContent = `You scored ${score} point${score === 1 ? "" : "s"}.`;
+  startBtn.classList.remove("hidden");
+  saveScoreToLeaderboard(score);
+  displayLeaderboard();
 }
 
-/* Hidden class */
-.hidden {
-  display: none;
+function saveScoreToLeaderboard(score) {
+  let leaderboard = JSON.parse(localStorage.getItem("movieTriviaLeaderboard")) || [];
+  const playerName = prompt("Game over! Enter your name for the leaderboard:", "Player") || "Player";
+  leaderboard.push({ name: playerName, score });
+  leaderboard.sort((a, b) => b.score - a.score);
+  if (leaderboard.length > 5) leaderboard.length = 5;
+  localStorage.setItem("movieTriviaLeaderboard", JSON.stringify(leaderboard));
 }
 
-/* Feedback text */
-#feedback {
-  margin-top: 1.2rem;
-  font-style: italic;
-  height: 1.5rem;
-  font-weight: 600;
-  color: #a5ffe6;
-  text-shadow: 0 0 5px #00bfa5;
+function displayLeaderboard() {
+  let leaderboard = JSON.parse(localStorage.getItem("movieTriviaLeaderboard")) || [];
+  leaderboardList.innerHTML = "";
+  if (leaderboard.length === 0) {
+    leaderboardList.innerHTML = "<li>No scores yet. Be the first!</li>";
+    return;
+  }
+  leaderboard.forEach(entry => {
+    const li = document.createElement("li");
+    li.textContent = `${entry.name}: ${entry.score}`;
+    leaderboardList.appendChild(li);
+  });
 }
 
-/* Game over */
-#game-over h2 {
-  margin-bottom: 0.8rem;
-  font-size: 2rem;
-  font-weight: 700;
-  color: #1de9b6;
-  text-shadow: 0 0 8px #00bfa5;
-}
-#final-score {
-  font-size: 1.3rem;
-  margin-bottom: 1rem;
-  font-weight: 600;
+function clearLeaderboardDisplay() {
+  leaderboardList.innerHTML = "";
 }
 
-/* Leaderboard container */
-#leaderboard-container {
-  margin: 1.5rem auto 2rem auto;
-  padding: 1rem 1.5rem;
-  max-width: 320px;
-  background: rgba(0, 0, 0, 0.5);
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0, 191, 165, 0.4);
-  text-align: center;
-  color: #1de9b6;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  opacity: 0;
-  animation: fadeIn 0.8s ease 0.3s forwards; /* delayed fade-in */
-}
+replayBtn.onclick = startGame;
+startBtn.onclick = startGame;
 
-/* Fade-in animation */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-#leaderboard-container h3 {
-  margin-bottom: 1rem;
-  font-weight: 700;
-  font-size: 1.5rem;
-  letter-spacing: 0.05em;
-  text-shadow: 0 0 5px #00bfa5;
-}
-
-#leaderboard-list {
-  list-style-type: decimal;
-  padding-left: 1.5rem;
-  margin: 0;
-  font-size: 1.1rem;
-}
-
-#leaderboard-list li {
-  margin-bottom: 0.6rem;
-  font-weight: 600;
-  color: #a5ffe6;
-  text-shadow: 0 0 3px #00bfa5;
-  transition: color 0.3s ease;
-}
-
-#leaderboard-list li:hover {
-  color: #ffffff;
-  cursor: default;
-}
-
-/* Game-over container fade-in */
-#game-over {
-  animation: fadeIn 0.6s ease forwards;
-}
+window.onload = displayLeaderboard;
