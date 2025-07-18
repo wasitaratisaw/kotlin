@@ -3,20 +3,22 @@ const questionEl = document.getElementById("question");
 const answersEl = document.getElementById("answers");
 const answerBtns = document.querySelectorAll(".answer");
 const timerEl = document.getElementById("timer");
+const timerBar = document.getElementById("timer-bar");
 const scoreEl = document.getElementById("score");
 const feedbackEl = document.getElementById("feedback");
 const gameOverEl = document.getElementById("game-over");
 const finalScoreEl = document.getElementById("final-score");
 const replayBtn = document.getElementById("replay-btn");
 const roundEl = document.getElementById("round");
+const leaderboardList = document.getElementById("leaderboard-list");
 
 let currentQuestion = {};
 let score = 0;
 let timeLeft = 60;
 let timer;
 let gameActive = false;
-let round = 1;
 let roundIndex = 0;
+let usedQuestions = [];
 
 const correctQuotes = [
   "Frankly, my dear, you nailed it.",
@@ -124,8 +126,6 @@ const rounds = [
   { name: "Round 3: Hard", questions: hardQuestions, points: 3 }
 ];
 
-let usedQuestions = [];
-
 function startGame() {
   score = 0;
   timeLeft = 60;
@@ -137,14 +137,15 @@ function startGame() {
   answersEl.classList.remove("hidden");
   updateScore();
   updateRoundDisplay();
+  updateTimerBar();
   nextQuestion();
-  timer = setInterval(updateTimer, 1000);
-}
-
-function updateTimer() {
-  timeLeft--;
-  timerEl.textContent = timeLeft;
-  if (timeLeft <= 0) endGame();
+  timer = setInterval(() => {
+    timeLeft--;
+    timerEl.textContent = timeLeft;
+    updateTimerBar();
+    if (timeLeft <= 0) endGame();
+  }, 1000);
+  clearLeaderboardDisplay();
 }
 
 function updateScore() {
@@ -155,11 +156,16 @@ function updateRoundDisplay() {
   roundEl.textContent = rounds[roundIndex].name;
 }
 
+function updateTimerBar() {
+  const percent = (timeLeft / 60) * 100;
+  timerBar.style.width = percent + "%";
+}
+
 function nextQuestion() {
   const currentRound = rounds[roundIndex];
 
   if (usedQuestions.length === currentRound.questions.length) {
-    // Go to next round if possible
+    // Move to next round if any
     roundIndex++;
     if (roundIndex >= rounds.length) {
       endGame();
@@ -214,7 +220,38 @@ function endGame() {
   gameOverEl.classList.remove("hidden");
   finalScoreEl.textContent = `You scored ${score} point${score === 1 ? "" : "s"}.`;
   startBtn.classList.remove("hidden");
+  saveScoreToLeaderboard(score);
+  displayLeaderboard();
 }
 
-startBtn.onclick = startGame;
+function saveScoreToLeaderboard(score) {
+  let leaderboard = JSON.parse(localStorage.getItem("movieTriviaLeaderboard")) || [];
+  const playerName = prompt("Game over! Enter your name for the leaderboard:", "Player") || "Player";
+  leaderboard.push({ name: playerName, score });
+  leaderboard.sort((a, b) => b.score - a.score);
+  if (leaderboard.length > 5) leaderboard.length = 5;
+  localStorage.setItem("movieTriviaLeaderboard", JSON.stringify(leaderboard));
+}
+
+function displayLeaderboard() {
+  let leaderboard = JSON.parse(localStorage.getItem("movieTriviaLeaderboard")) || [];
+  leaderboardList.innerHTML = "";
+  if (leaderboard.length === 0) {
+    leaderboardList.innerHTML = "<li>No scores yet. Be the first!</li>";
+    return;
+  }
+  leaderboard.forEach(entry => {
+    const li = document.createElement("li");
+    li.textContent = `${entry.name}: ${entry.score}`;
+    leaderboardList.appendChild(li);
+  });
+}
+
+function clearLeaderboardDisplay() {
+  leaderboardList.innerHTML = "";
+}
+
 replayBtn.onclick = startGame;
+startBtn.onclick = startGame;
+
+window.onload = displayLeaderboard;
