@@ -1,19 +1,41 @@
-/* Existing styles... */
-
-#leaderboard-container {
-  margin: 1rem 0;
-  text-align: left;
-  max-width: 300px;
-  margin-left: auto;
-  margin-right: auto;
-  color: #1de9b6;
+/* Reset & base */
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: #111;
+  color: #f4f4f4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 1rem;
+}
+.container {
+  text-align: center;
+  max-width: 600px;
+  width: 100%;
+  padding: 1rem 2rem;
+  background-color: #222;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0, 191, 165, 0.7);
 }
 
-#leaderboard-list {
-  padding-left: 1.2rem;
+/* Titles */
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
 }
-
-#leaderboard-list li {
-  margin-bottom: 0.4rem;
+.subtitle {
   font-weight: 600;
+  font-size: 1.2rem;
+  color: #1de9b6;
+  margin-bottom: 1.5rem;
+  font-style: italic;
+  letter-spacing: 0.05em;
 }
+
+/* Timer & Score */
+#tim
