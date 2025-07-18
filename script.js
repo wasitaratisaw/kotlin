@@ -7,6 +7,7 @@ const scoreEl = document.getElementById("score");
 const feedbackEl = document.getElementById("feedback");
 const gameOverEl = document.getElementById("game-over");
 const finalScoreEl = document.getElementById("final-score");
+const leaderboardList = document.getElementById("leaderboard-list");
 const replayBtn = document.getElementById("replay-btn");
 
 let currentQuestion = {};
@@ -15,6 +16,8 @@ let timeLeft = 60;
 let timer;
 let gameActive = false;
 let questionsAnswered = 0;
+
+const maxLeaderboardEntries = 5;
 
 const questions = [
   {
@@ -121,6 +124,8 @@ function startGame() {
   updateProgress();
   nextQuestion();
   timer = setInterval(updateTimer, 1000);
+  clearLeaderboardDisplay();
+  feedbackEl.textContent = "";
 }
 
 function updateTimer() {
@@ -175,7 +180,56 @@ function endGame() {
   gameOverEl.classList.remove("hidden");
   finalScoreEl.textContent = `You scored ${score} point${score === 1 ? "" : "s"}.`;
   startBtn.classList.remove("hidden");
+
+  askNameAndSaveScore();
+  displayLeaderboard();
+}
+
+function askNameAndSaveScore() {
+  let name = prompt("Game over! Enter your name for the leaderboard:", "Player");
+  if (!name || name.trim() === "") name = "Player";
+
+  const leaderboard = getLeaderboard();
+  leaderboard.push({ name, score });
+  leaderboard.sort((a, b) => b.score - a.score);
+  if (leaderboard.length > maxLeaderboardEntries) {
+    leaderboard.length = maxLeaderboardEntries; // keep top 5
+  }
+  localStorage.setItem("joesBarrelLeaderboard", JSON.stringify(leaderboard));
+}
+
+function getLeaderboard() {
+  const saved = localStorage.getItem("joesBarrelLeaderboard");
+  if (saved) {
+    try {
+      return JSON.parse(saved);
+    } catch {
+      return [];
+    }
+  }
+  return [];
+}
+
+function displayLeaderboard() {
+  const leaderboard = getLeaderboard();
+  leaderboardList.innerHTML = "";
+  if (leaderboard.length === 0) {
+    leaderboardList.innerHTML = "<li>No scores yet. Be the first!</li>";
+    return;
+  }
+  leaderboard.forEach(entry => {
+    const li = document.createElement("li");
+    li.textContent = `${entry.name}: ${entry.score}`;
+    leaderboardList.appendChild(li);
+  });
+}
+
+function clearLeaderboardDisplay() {
+  leaderboardList.innerHTML = "";
 }
 
 startBtn.onclick = startGame;
 replayBtn.onclick = startGame;
+
+// On page load, display leaderboard if available
+window.onload = displayLeaderboard;
