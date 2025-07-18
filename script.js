@@ -111,7 +111,6 @@ const questions = [
     c: 2,
     r: "They weigh the same — a pound is a pound!"
   },
-  // New additions in the same style & tone:
   {
     q: "If a rooster lays an egg on a rooftop, which side will it roll down?",
     a: ["Left", "Right", "It won’t roll", "Roosters don’t lay eggs"],
@@ -234,11 +233,12 @@ function nextQuestion() {
   questionEl.classList.add("fade-out");
 
   setTimeout(() => {
-    currentQuestion = availableQuestions.pop();
+    currentQuestion = availableQuestions.shift();  // Changed to shift() to avoid repeats
     questionEl.textContent = currentQuestion.q;
     answerBtns.forEach((btn, index) => {
       btn.textContent = currentQuestion.a[index];
       btn.onclick = () => checkAnswer(index);
+      btn.disabled = false;  // Enable buttons for new question
     });
     questionEl.classList.remove("fade-out");
   }, 400);
@@ -246,6 +246,9 @@ function nextQuestion() {
 
 function checkAnswer(index) {
   if (!gameActive) return;
+
+  answerBtns.forEach(btn => btn.disabled = true); // Disable buttons after answer to prevent multiple clicks
+
   if (index === currentQuestion.c) {
     feedbackEl.textContent = "Correct! 🧠";
     score++;
@@ -255,6 +258,7 @@ function checkAnswer(index) {
   }
   setTimeout(() => {
     feedbackEl.textContent = "";
+    answerBtns.forEach(btn => btn.disabled = false); // Re-enable buttons for next question
     nextQuestion();
   }, 1000);
 }
