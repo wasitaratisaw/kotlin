@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Am I Smarter Than This?</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Am I Smarter Than This?</h1>
+    <div id="game">
+      <div id="timer">60</div>
+      <div id="score">Score: 0</div>
+      <div id="question">Press start to begin!</div>
+      <div id="answers" class="hidden">
+        <button class="answer"></button>
+        <button class="answer"></button>
+        <button class="answer"></button>
+        <button class="answer"></button>
+      </div>
+      <button id="start-btn">Start Game</button>
+    </div>
+    <div id="feedback"></div>
+    <div id="game-over" class="hidden">
+      <h2>Game Over!</h2>
+      <p id="final-score"></p>
+      <button id="replay-btn">Play Again</button>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
