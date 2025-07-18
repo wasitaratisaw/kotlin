@@ -2,40 +2,34 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Joe hasn't got nits</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Joe's Barrel of Apples - Movie Trivia</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
-    <h2 class="subtitle">Joe's Nonsense Brain Game</h2>
-    <h1>Joe's Barrel of Apples</h1>
-    <div id="game">
+    <h1 id="game-title">Joe's Barrel of Apples</h1>
+    <div id="round" class="round"></div>
+    <div id="timer-container">
+      <div id="timer-bar"></div>
       <div id="timer">60</div>
-      <div id="score">Score: 0</div>
-      <div id="progress-container">
-        <div id="progress-bar"></div>
-      </div>
-      <div id="question">Press start to begin!</div>
-      <div id="answers" class="hidden">
-        <button class="answer"></button>
-        <button class="answer"></button>
-        <button class="answer"></button>
-        <button class="answer"></button>
-      </div>
-      <button id="start-btn">Start Game</button>
     </div>
-    <div id="feedback"></div>
-    <div id="game-over" class="hidden">
-      <h2>Game Over!</h2>
-      <p id="final-score"></p>
+    <div id="score" class="score">Score: 0</div>
+
+    <div id="question" class="question">Press Start to begin!</div>
+    <div id="answers" class="answers hidden">
+      <button class="answer"></button>
+      <button class="answer"></button>
+      <button class="answer"></button>
+      <button class="answer"></button>
+    </div>
+
+    <div id="feedback" class="feedback"></div>
+
+    <button id="start-btn" class="btn">Start Game</button>
+
+    <div id="game-over" class="game-over hidden">
+      <div id="final-score" class="final-score"></div>
       <div id="leaderboard-container">
-        <h3>Leaderboard</h3>
-        <ol id="leaderboard-list"></ol>
-      </div>
-      <button id="replay-btn">Play Again</button>
-    </div>
-  </div>
-  <script src="script.js"></script>
-</body>
-</html>
+        <h2>Leaderboard</h2>
+        <ol id="leaderboard-
